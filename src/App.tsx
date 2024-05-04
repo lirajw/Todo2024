@@ -1,5 +1,5 @@
 import { PlusCircle } from '@phosphor-icons/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import styles from './App.module.css'
 
@@ -17,9 +17,20 @@ export interface ITask {
 }
 
 export function App() {
-  const [tasks, setTasks] = useState<ITask[]>([])
+  const [tasks, setTasks] = useState<ITask[]>(() => {
+    const taskStoredJson = localStorage.getItem('@Todo2024:tasks')
+    if(taskStoredJson) {
+      return JSON.parse(taskStoredJson)
+    }
+
+    return []
+  })
   const [inputValue, setInputValue] = useState('')
 
+  useEffect(() => {
+    const taskStoredJson = JSON.stringify(tasks)
+    localStorage.setItem('@Todo2024:tasks', taskStoredJson)
+  }, [tasks])
   const checkedTasksCounter = tasks.reduce((prevValue, currentTask) => {
     if (currentTask.isChecked) {
       return prevValue + 1
